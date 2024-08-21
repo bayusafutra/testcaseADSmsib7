@@ -1,0 +1,129 @@
+@extends('layouts.admin')
+@section('erga')
+    <div class="title mb-4">
+        <h1 class="text-center" style="font-family:courier new; font-style: initial;">Pesanan Selesai Srikandi
+            Semanggi
+        </h1>
+    </div>
+    <div class="row ">
+        <div class="col-12 grid-margin">
+            @if (session()->has('success'))
+                <div class="row justify-content-end" style="padding-right: 18px">
+                    <div class="alert alert-success col-lg-5" role="alert">
+                        {{ session('success') }}
+                    </div>
+                </div>
+            @endif
+            <div class="card">
+                <div class="card-body">
+                    <div class="row justify-content-center">
+                        <div class="col" style="padding-left: 28px">
+                            <h4 class="card-title">Data Pesanan Selesai</h4>
+                        </div>
+                    </div>
+                    <div class="row justify-content-start">
+                        <div class="col-lg-6" style="padding-left: 30px">
+                            <strong>Jumlah Pesanan : {{ $all->count() }}</strong>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table">
+
+                            <thead class="text-center">
+                                <tr>
+                                    <th>
+                                        <strong>No</strong>
+                                    </th>
+                                    <th> Nomer Pesanan </th>
+                                    <th> Nama Pelanggan </th>
+                                    <th> Detail Pesanan </th>
+                                    <th> Waktu Terima Pesanan </th>
+                                </tr>
+                            </thead>
+
+                            <tbody class="text-center">
+                                @if ($selesai->count() == 0)
+                            </tbody>
+                        </table>
+                        <div class="text-center mt-3">
+                            <strong style="color: #6C7293; font-family:courier new">Data Pesanan Dikemas Belum
+                                Ada</strong>
+                        </div>
+                    @else
+                        @foreach ($selesai as $kat)
+                            <tr>
+                                <td>
+                                    <strong>{{ $selesai->firstItem() + $loop->index }}</strong>
+                                </td>
+                                <td>
+                                    <span class="pl-2">{{ ucwords($kat->nomer) }}</span>
+                                </td>
+                                <td> {{ ucwords($kat->user->name) }} </td>
+                                <td>
+                                    <button class="btn btn-primary"
+                                        style="margin-right: 5px; border-radius: 5px; background-color: rgb(50, 45, 134); padding: 12px 27px 12px 27px"
+                                        data-bs-toggle="modal" data-bs-target="#detail{{ $kat->id }}">Detail
+                                    </button>
+
+                                    <div class="modal fade" id="detail{{ $kat->id }}" tabindex="-1"
+                                        aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                            <div class="modal-content"
+                                                style="background-color: #2A3038; color:white; border-radius: 1rem; width: max-content;">
+                                                <div class="modal-header">
+                                                    <h3 class="modal-title fs-1" id="exampleModalLabel">
+                                                        Detail Pesanan #{{ ucwords($kat->nomer) }}
+                                                    </h3>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <p>
+                                                    <div class="row">
+                                                        @foreach ($kat->detail()->get() as $det)
+                                                            <div class="col-3 mb-2">
+                                                                {{ ucwords($det->barang->nama) }}
+                                                            </div>
+                                                            <div class="col-5 mb-2">
+                                                                (x{{ $det->qtyitem }})
+                                                            </div>
+                                                            <div class="col-4 mb-2">
+                                                                Rp
+                                                                {{ number_format($det->qtyitem * $det->barang->harga, 2, ',', '.') }}
+                                                            </div>
+                                                        @endforeach
+                                                    </div>
+                                                    <div class="row d-flex justify-content-between mt-4">
+                                                        <div class="col-7">
+
+                                                        </div>
+                                                        <div class="col-5 ms-auto">
+                                                            Subtotal : <strong>Rp
+                                                                {{ number_format($kat->subtotal, 2, ',', '.') }}</strong>
+                                                        </div>
+                                                    </div>
+                                                    </p>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-light" data-bs-dismiss="modal"
+                                                        style="margin-right: 5px; border-radius: 5px; background-color: rgb(13, 105, 30); color: white; padding: 12px 27px 12px 27px">Tutup
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>{{ \Carbon\Carbon::parse($kat->timeterima)->translatedFormat('l, d F Y H:i') }}</td>
+                            </tr>
+                        @endforeach
+                        </tbody>
+                        </table>
+                        @endif
+                        <br>
+                        <div class="erga d-flex justify-content-center">
+                            {{ $selesai->links() }}
+                        </div>
+                        <div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endsection
